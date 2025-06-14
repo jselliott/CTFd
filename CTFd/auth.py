@@ -29,6 +29,7 @@ from CTFd.utils.security.email import (
     verify_reset_password_token,
 )
 from CTFd.utils.validators import ValidationError
+from CTFd.utils.hooks import call_hooks
 
 auth = Blueprint("auth", __name__)
 
@@ -36,6 +37,7 @@ auth = Blueprint("auth", __name__)
 @auth.route("/confirm", methods=["POST", "GET"])
 @auth.route("/confirm/<data>", methods=["POST", "GET"])
 @ratelimit(method="POST", limit=10, interval=60)
+@call_hooks("CTFd.auth.confirm")
 def confirm(data=None):
     if not get_config("verify_emails"):
         # If the CTF doesn't care about confirming email addresses then redierct to challenges
@@ -98,6 +100,7 @@ def confirm(data=None):
 @auth.route("/reset_password", methods=["POST", "GET"])
 @auth.route("/reset_password/<data>", methods=["POST", "GET"])
 @ratelimit(method="POST", limit=10, interval=60)
+@call_hooks("CTFd.auth.reset_password")
 def reset_password(data=None):
     if config.can_send_mail() is False:
         return render_template(
@@ -186,6 +189,7 @@ def reset_password(data=None):
 @auth.route("/register", methods=["POST", "GET"])
 @check_registration_visibility
 @ratelimit(method="POST", limit=10, interval=5)
+@call_hooks("CTFd.auth.register")
 def register():
     errors = get_errors()
     if current_user.authed():
@@ -382,6 +386,7 @@ def register():
 
 @auth.route("/login", methods=["POST", "GET"])
 @ratelimit(method="POST", limit=10, interval=5)
+@call_hooks("CTFd.auth.login")
 def login():
     errors = get_errors()
     if request.method == "POST":
@@ -436,6 +441,7 @@ def login():
 
 
 @auth.route("/oauth")
+@call_hooks("CTFd.auth.oauth_login")
 def oauth_login():
     endpoint = (
         get_app_config("OAUTH_AUTHORIZATION_ENDPOINT")
@@ -466,6 +472,7 @@ def oauth_login():
 
 @auth.route("/redirect", methods=["GET"])
 @ratelimit(method="GET", limit=10, interval=60)
+@call_hooks("CTFd.auth.oauth_redirect")
 def oauth_redirect():
     oauth_code = request.args.get("code")
     state = request.args.get("state")
@@ -596,6 +603,7 @@ def oauth_redirect():
 
 
 @auth.route("/logout")
+@call_hooks("CTFd.auth.logout")
 def logout():
     if current_user.authed():
         logout_user()

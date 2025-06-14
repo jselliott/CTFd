@@ -20,7 +20,6 @@ from CTFd.utils.plugins import register_stylesheet as utils_register_plugin_styl
 
 Menu = namedtuple("Menu", ["title", "route", "link_target"])
 
-
 def register_plugin_assets_directory(app, base_path, admins_only=False, endpoint=None):
     """
     Registers a directory to serve assets

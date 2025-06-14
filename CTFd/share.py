@@ -2,11 +2,13 @@ from flask import Blueprint, abort, request
 
 from CTFd.utils import get_config
 from CTFd.utils.social import get_social_share
+from CTFd.utils.hooks import call_hooks
 
 social = Blueprint("social", __name__)
 
 
 @social.route("/share/<type>/assets/<path>")
+@call_hooks("CTFd.share.assets")
 def assets(type, path):
     if bool(get_config("social_shares")) is False:
         abort(403)
@@ -22,6 +24,7 @@ def assets(type, path):
 
 
 @social.route("/share/<type>")
+@call_hooks("CTFd.share.share")
 def share(type):
     if bool(get_config("social_shares")) is False:
         abort(403)

@@ -12,6 +12,7 @@ from CTFd.utils.decorators import (
 from CTFd.utils.decorators.visibility import check_challenge_visibility
 from CTFd.utils.helpers import get_errors, get_infos
 from CTFd.utils.user import authed, get_current_team
+from CTFd.utils.hooks import call_hooks
 
 challenges = Blueprint("challenges", __name__)
 
@@ -21,6 +22,7 @@ challenges = Blueprint("challenges", __name__)
 @during_ctf_time_only
 @require_verified_emails
 @check_challenge_visibility
+@call_hooks("CTFd.challenges.listing")
 def listing():
     if (
         Configs.challenge_visibility == ChallengeVisibilityTypes.PUBLIC

@@ -9,6 +9,7 @@ from CTFd.utils.decorators.visibility import (
 from CTFd.utils.helpers import get_infos
 from CTFd.utils.scores import get_standings
 from CTFd.utils.user import is_admin
+from CTFd.utils.hooks import call_hooks
 
 scoreboard = Blueprint("scoreboard", __name__)
 
@@ -16,6 +17,7 @@ scoreboard = Blueprint("scoreboard", __name__)
 @scoreboard.route("/scoreboard")
 @check_account_visibility
 @check_score_visibility
+@call_hooks("CTFd.scoreboard.listing")
 def listing():
     infos = get_infos()
 

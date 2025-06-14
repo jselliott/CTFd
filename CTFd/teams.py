@@ -15,6 +15,7 @@ from CTFd.utils.helpers import get_errors, get_infos
 from CTFd.utils.humanize.words import pluralize
 from CTFd.utils.user import get_current_user, get_current_user_attrs
 from CTFd.utils.validators import ValidationError
+from CTFd.utils.hooks import call_hooks
 
 teams = Blueprint("teams", __name__)
 
@@ -22,6 +23,7 @@ teams = Blueprint("teams", __name__)
 @teams.route("/teams")
 @check_account_visibility
 @require_team_mode
+@call_hooks("CTFd.teams.listing")
 def listing():
     q = request.args.get("q")
     field = request.args.get("field", "name")
@@ -56,6 +58,7 @@ def listing():
 @teams.route("/teams/invite", methods=["GET", "POST"])
 @registered_only
 @require_team_mode
+@call_hooks("CTFd.teams.invite")
 def invite():
     infos = get_infos()
     errors = get_errors()
@@ -125,6 +128,7 @@ def invite():
 @authed_only
 @require_team_mode
 @ratelimit(method="POST", limit=10, interval=5)
+@call_hooks("CTFd.teams.join")
 def join():
     infos = get_infos()
     errors = get_errors()
@@ -188,6 +192,7 @@ def join():
 @teams.route("/teams/new", methods=["GET", "POST"])
 @authed_only
 @require_team_mode
+@call_hooks("CTFd.teams.new")
 def new():
     infos = get_infos()
     errors = get_errors()
@@ -336,6 +341,7 @@ def new():
 @teams.route("/team")
 @authed_only
 @require_team_mode
+@call_hooks("CTFd.teams.private")
 def private():
     infos = get_infos()
     errors = get_errors()
@@ -374,6 +380,7 @@ def private():
 @check_account_visibility
 @check_score_visibility
 @require_team_mode
+@call_hooks("CTFd.teams.public")
 def public(team_id):
     infos = get_infos()
     errors = get_errors()

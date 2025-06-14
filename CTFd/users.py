@@ -9,12 +9,14 @@ from CTFd.utils.decorators.visibility import (
 )
 from CTFd.utils.helpers import get_errors, get_infos
 from CTFd.utils.user import get_current_user
+from CTFd.utils.hooks import call_hooks
 
 users = Blueprint("users", __name__)
 
 
 @users.route("/users")
 @check_account_visibility
+@call_hooks("CTFd.users.listing")
 def listing():
     q = request.args.get("q")
     field = request.args.get("field", "name")
@@ -47,6 +49,7 @@ def listing():
 
 @users.route("/profile")
 @users.route("/user")
+@call_hooks("CTFd.users.private")
 @authed_only
 def private():
     infos = get_infos()
@@ -69,6 +72,7 @@ def private():
 @users.route("/users/<int:user_id>")
 @check_account_visibility
 @check_score_visibility
+@call_hooks("CTFd.users.public")
 def public(user_id):
     infos = get_infos()
     errors = get_errors()
